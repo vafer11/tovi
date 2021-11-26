@@ -4,7 +4,7 @@
 						[reitit.swagger-ui :as swagger-ui]
 						[reitit.ring.middleware.muuntaja :as muuntaja]
 						[reitit.ring.middleware.exception :as exception]
-						[reitit.coercion.schema]
+						[reitit.coercion.spec]
 						[reitit.ring.coercion :as coercion]
 						[reitit.dev.pretty :as pretty]
 						[muuntaja.core :as m]
@@ -27,7 +27,7 @@
 		(ring/router routes
 			{:exception pretty/exception
 			 :data      {:db db
-									 :coercion   reitit.coercion.schema/coercion
+									 :coercion   reitit.coercion.spec/coercion
 									 :muuntaja   m/instance
 									 :middleware [swagger/swagger-feature
 																muuntaja/format-negotiate-middleware

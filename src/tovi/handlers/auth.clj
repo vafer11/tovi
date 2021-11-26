@@ -10,8 +10,7 @@
 													:user user}}
 			{:status 200 :body {:result :ko
 													:msg "Invalid values"
-													:errors ["Invalid values"]
-													:user nil}})))
+													:errors ["Invalid values"]}})))
 
 (defn signin [{:keys [parameters db]}]
 	(let [user (database/signin (:body parameters))]
@@ -22,8 +21,7 @@
 													:user user}}
 			{:status 200 :body {:result :ko
 													:msg "Invalid user or password"
-													:errors ["Invalid user or password"]
-													:user nil}})))
+													:errors ["Invalid user or password"]}})))
 
 (defn signout [{:keys [db]}]
 	(println "db: " db)
