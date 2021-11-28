@@ -1,5 +1,6 @@
 (ns tovi.handlers.auth
-	(:require [tovi.db.auth :as database]))
+	(:require [tovi.db.auth :as database]
+						[tovi.utils.auth :as auth]))
 
 (defn signup [{:keys [parameters db]}]
 	(let [user (database/signup (:body parameters))]
@@ -7,7 +8,8 @@
 			{:status 200 :body {:result :ok
 													:msg "User successfully signed up"
 													:errors []
-													:user user}}
+													:user user
+													:token (auth/get-token user)}}
 			{:status 200 :body {:result :ko
 													:msg "Invalid values"
 													:errors ["Invalid values"]}})))
@@ -18,7 +20,8 @@
 			{:status 200 :body {:result :ok
 													:msg "User successfully signed in"
 													:errors []
-													:user user}}
+													:user user
+													:token (auth/get-token user)}}
 			{:status 200 :body {:result :ko
 													:msg "Invalid user or password"
 													:errors ["Invalid user or password"]}})))

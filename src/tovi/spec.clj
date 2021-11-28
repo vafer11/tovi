@@ -7,6 +7,7 @@
 (s/def ::email string?)
 (s/def ::pw string?)
 (s/def ::confirm_pw string?)
+(s/def ::token string?)
 (s/def ::errors (s/coll-of string?))
 (s/def ::result keyword?)
 (s/def ::msg string?)
@@ -14,9 +15,9 @@
 (s/def ::users (s/coll-of ::user))
 
 
-(s/def ::signin-form (s/keys :req-un [::name ::pw]))
+(s/def ::signin-form (s/keys :req-un [::email ::pw]))
 (s/def ::update-user-form (s/keys :req-un [::name ::last_name]))
 (s/def ::signup-form (s/keys :req-un [::name ::last_name ::email ::confirm_pw ::pw]))
-(s/def ::user-response (s/keys :req-un [::result ::msg ::errors] :opt-un [::user]))
-(s/def ::users-response (s/keys :req-un [::result ::msg ::errors] :opt-un [::users]))
+(s/def ::user-response (s/keys :req-un [::result ::msg ::errors] :opt-un [::user ::token]))
+(s/def ::users-response (s/keys :req-un [::result ::msg ::errors] :opt-un [::users ::token]))
 

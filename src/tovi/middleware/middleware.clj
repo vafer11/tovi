@@ -1,4 +1,5 @@
-(ns tovi.middleware.middleware)
+(ns tovi.middleware.middleware
+	(:require [buddy.auth :refer [authenticated?]]))
 
 (def db
 	{:name ::db

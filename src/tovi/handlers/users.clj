@@ -1,7 +1,9 @@
 (ns tovi.handlers.users
 	(:require [tovi.db.users :as database]))
 
-(defn get-all-users [{:keys [db]}]
+(defn get-all-users [{:keys [db parameters]}]
+	(println parameters)
+	(println "pepe")
 	(let [users (database/get-all-users)]
 		(if users
 			{:status 200 :body {:result :ok
@@ -15,7 +17,6 @@
 (defn get-user-by-id [{:keys [parameters]}]
 	(let [id (get-in parameters [:path :id])
 				user (database/get-user-by-id id)]
-		(println id)
 		(if user
 			{:status 200 :body {:result :ok
 													:msg "User retrieved successfully"

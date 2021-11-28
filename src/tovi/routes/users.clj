@@ -1,12 +1,15 @@
 (ns tovi.routes.users
 	(:require [tovi.handlers.users :as users]
-						[tovi.spec :as s]))
+						[tovi.spec :as s]
+						[tovi.middleware.auth :refer [wrap-authenticated?]]))
 
 (def users-routes
 	["/users"
 	 {:swagger {:tags ["users"]}}
 	 [""
 		{:get {:summary "Get all users"
+					 :middleware [wrap-authenticated?]
+					 :parameters {:header {:authorization string?}}
 					 :handler users/get-all-users
 					 :responses {200 {:body ::s/users-response}}}
 		 :post {:summary "Create a new user"

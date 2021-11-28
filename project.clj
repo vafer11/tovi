@@ -10,6 +10,7 @@
                  [integrant/repl "0.3.2"]
                  [buddy/buddy-hashers "1.8.1"]
                  [buddy/buddy-auth "3.0.1"]
+                 [buddy/buddy-sign "3.4.1"]
                  [honeysql "1.0.461"]
                  [org.postgresql/postgresql "42.1.3"]
                  [com.github.seancorfield/next.jdbc "1.2.737"]]

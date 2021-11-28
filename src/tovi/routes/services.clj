@@ -9,9 +9,9 @@
 						[reitit.dev.pretty :as pretty]
 						[muuntaja.core :as m]
 						[tovi.middleware.middleware :as middleware]
+						[tovi.middleware.auth :refer [wrap-jwt-authenticated]]
 						[tovi.routes.auth :refer [auth-routes]]
 						[tovi.routes.users :refer [users-routes]]))
-
 
 (def routes
 	[["/swagger.json"
@@ -27,6 +27,9 @@
 		(ring/router routes
 			{:exception pretty/exception
 			 :data      {:db db
+									 :securityDefinitions {:api_key {:type "apiKey"
+																									 :name "Authorization"
+																									 :in "header"}}
 									 :coercion   reitit.coercion.spec/coercion
 									 :muuntaja   m/instance
 									 :middleware [swagger/swagger-feature
@@ -37,6 +40,7 @@
 																coercion/coerce-request-middleware
 																coercion/coerce-response-middleware
 																; The first middleware to be executed
+																wrap-jwt-authenticated
 																middleware/db]}})
 		(ring/routes
 			(swagger-ui/create-swagger-ui-handler
