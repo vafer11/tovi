@@ -18,4 +18,4 @@
   ;:plugins [[lein-environ "1.2.0"]]
   :main tovi.core/-main
   :repl-options {:init-ns user}
-  :profiles {:dev {:main user :source-paths ["dev"] }})
+  :profiles {})
