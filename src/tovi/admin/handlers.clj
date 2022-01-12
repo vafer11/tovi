@@ -1,10 +1,12 @@
-(ns tovi.handlers.users
-	(:require [tovi.db.users :as database]))
+(ns tovi.admin.handlers
+	(:require [tovi.admin.db :as database]))
 
-(defn get-all-users [{:keys [db parameters]}]
+;; Admin user functions
+
+(defn get-all-users [{:keys [parameters db]}]
 	(println parameters)
 	(println "pepe")
-	(let [users (database/get-all-users)]
+	(let [users (database/get-all-users db)]
 		(if users
 			{:status 200 :body {:result :ok
 													:msg "Users retrieved successfully"
@@ -14,9 +16,9 @@
 													:msg "Empty list of users"
 													:errors ["Empty list of users"]}})))
 
-(defn get-user-by-id [{:keys [parameters]}]
+(defn get-user-by-id [{:keys [parameters db]}]
 	(let [id (get-in parameters [:path :id])
-				user (database/get-user-by-id id)]
+				user (database/get-user-by-id db id)]
 		(if user
 			{:status 200 :body {:result :ok
 													:msg "User retrieved successfully"
@@ -27,10 +29,9 @@
 													:errors [(format "User with id %d does not exit" id)]}})))
 
 ;; Administrators could create new users.
-;; That functionality is available just for specific situations.
-(defn create-user [{:keys [parameters]}]
+(defn create-user [{:keys [parameters db]}]
 	(let [body (:body parameters)
-				user (database/create-user body)]
+				user (database/create-user db body)]
 		(if user
 			{:status 200 :body {:result :ok
 													:msg "User successfully added"
@@ -40,10 +41,10 @@
 													:msg "User could not been created"
 													:errors ["User could not been created"]}})))
 
-(defn update-user [{:keys [parameters]}]
+(defn update-user [{:keys [parameters db]}]
 	(let [id (get-in parameters [:path :id])
 				body (:body parameters)
-				user (database/update-user id body)]
+				user (database/update-user db id body)]
 		(if user
 			{:status 200 :body {:result :ok
 													:msg "User successfully updated"
@@ -53,9 +54,9 @@
 													:msg "User could not been updated"
 													:errors ["User could not been updated"]}})))
 
-(defn delete-user [{:keys [parameters]}]
+(defn delete-user [{:keys [parameters db]}]
 	(let [id (get-in parameters [:path :id])
-				deleted-user (database/delete-user id)]
+				deleted-user (database/delete-user db id)]
 		(if deleted-user
 			{:status 200 :body {:result :ok
 													:msg "User successfully deleted"

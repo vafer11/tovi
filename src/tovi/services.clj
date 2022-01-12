@@ -1,17 +1,17 @@
-(ns tovi.routes.services
+(ns tovi.services
 	(:require [reitit.ring :as ring]
-						[reitit.swagger :as swagger]
-						[reitit.swagger-ui :as swagger-ui]
-						[reitit.ring.middleware.muuntaja :as muuntaja]
-						[reitit.ring.middleware.exception :as exception]
-						[reitit.coercion.spec]
-						[reitit.ring.coercion :as coercion]
-						[reitit.dev.pretty :as pretty]
-						[muuntaja.core :as m]
-						[tovi.middleware.middleware :as middleware]
-						[tovi.middleware.auth :refer [wrap-jwt-authenticated]]
-						[tovi.routes.auth :refer [auth-routes]]
-						[tovi.routes.users :refer [users-routes]]))
+		[reitit.swagger :as swagger]
+		[reitit.swagger-ui :as swagger-ui]
+		[reitit.ring.middleware.muuntaja :as muuntaja]
+		[reitit.ring.middleware.exception :as exception]
+		[reitit.coercion.spec]
+		[reitit.ring.coercion :as coercion]
+		[reitit.dev.pretty :as pretty]
+		[muuntaja.core :as m]
+		[tovi.middleware.middleware :as middleware]
+		[tovi.middleware.auth :refer [wrap-jwt-authenticated]]
+		[tovi.accounts.routes :refer [account-routes]]
+		[tovi.admin.routes :refer [admin-routes]]))
 
 (def routes
 	[["/swagger.json"
@@ -19,8 +19,8 @@
 					 :swagger {:info {:title "Comment System API"}}
 					 :handler (swagger/create-swagger-handler)}}]
 	 ["/api"
-		auth-routes
-		users-routes]])
+		account-routes
+		admin-routes]])
 
 (defn create-app [db]
 	(ring/ring-handler

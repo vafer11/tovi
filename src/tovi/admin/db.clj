@@ -1,63 +1,64 @@
-(ns tovi.db.users
-	(:require [buddy.hashers :refer [encrypt]]
-						[tovi.db.core :as db]
-						[honeysql.core :as honey]
-						[honeysql.helpers :as helpers]))
+(ns tovi.admin.db
+	(:require [honeysql.core :as honey]
+						[honeysql.helpers :as helpers]
+						[buddy.hashers :refer [encrypt]]
+						[tovi.db :refer [query query-one]]))
 
-(defn get-all-users []
+;; Admin user functions
+
+(defn get-all-users [db]
 	(try
 		(let [users (-> (helpers/select :*)
 									(helpers/from :users)
 									honey/format
-									db/db-query)
+									(query db))
 					result (map #(dissoc % :password) users)]
 			result)
 		(catch Exception e
 			(println e))))
 
-(defn get-user-by-id [id]
+(defn get-user-by-id [db id]
 	(try
 		(let [user (-> (helpers/select :id :name :last_name :email)
 								 (helpers/from :users)
 								 (helpers/where := :id id)
 								 honey/format
-								 db/db-query-one)]
+								 (query-one db))]
 			user)
 		(catch Exception e
 			(println e))))
 
-(defn create-user [{:keys [name last_name email pw]}]
+(defn create-user [db {:keys [name last_name email pw]}]
 	(try
 		(let [encrypted-pw (encrypt pw)
 					user (-> (helpers/insert-into :users)
 								 (helpers/columns :name :last_name :email :password)
 								 (helpers/values [[name last_name email encrypted-pw]])
 								 honey/format
-								 db/db-query-one)
+								 (query-one db))
 					result (dissoc user :password)]
 			result)
 		(catch Exception e
 			(println e))))
 
-
-(defn update-user [id {:keys [name last_name]}]
+(defn update-user [db id {:keys [name last_name]}]
 	(try
 		(let [user (-> (helpers/update :users)
 								 (helpers/set0 {:name name :last_name last_name})
 								 (helpers/where := :id id)
 								 honey/format
-								 db/db-query-one
+								 (query-one db)
 								 (dissoc :password))]
 			user)
 		(catch Exception e
 			(println e))))
 
-(defn delete-user [id]
+(defn delete-user [db id]
 	(try
 		(let [result (-> (helpers/delete-from :users)
 									 (helpers/where := :id id)
 									 honey/format
-									 db/db-query-one
+									 (query-one db)
 									 (dissoc :password))]
 			result)
 		(catch Exception e

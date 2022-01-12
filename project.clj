@@ -1,5 +1,5 @@
 (defproject tovi "0.1.0"
-  :description "Panadería Solis rest full api"
+  :description "Rest full api"
   :url "https://github.com/vafer11/tovi"
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
             :url "https://www.eclipse.org/legal/epl-2.0/"}
@@ -13,8 +13,9 @@
                  [buddy/buddy-sign "3.4.1"]
                  [honeysql "1.0.461"]
                  [org.postgresql/postgresql "42.1.3"]
-                 [com.github.seancorfield/next.jdbc "1.2.737"]]
+                 [com.github.seancorfield/next.jdbc "1.2.737"]
+                 [environ "1.2.0"]]
+  ;:plugins [[lein-environ "1.2.0"]]
   :main tovi.core/-main
   :repl-options {:init-ns user}
-  :profiles {:dev {:main user
-                   :source-paths ["dev"]}})
+  :profiles {:dev {:main user :source-paths ["dev"] }})
