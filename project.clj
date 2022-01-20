@@ -4,8 +4,10 @@
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
             :url "https://www.eclipse.org/legal/epl-2.0/"}
   :dependencies [[org.clojure/clojure "1.10.1"]
+                 [org.clojure/tools.logging "1.2.4"]
                  [metosin/reitit "0.5.15"]
                  [ring/ring-jetty-adapter "1.9.4"]
+                 [ring "1.9.4"]
                  [integrant "0.8.0"]
                  [integrant/repl "0.3.2"]
                  [buddy/buddy-hashers "1.8.1"]
@@ -15,7 +17,9 @@
                  [org.postgresql/postgresql "42.1.3"]
                  [com.github.seancorfield/next.jdbc "1.2.737"]
                  [environ "1.2.0"]]
-  ;:plugins [[lein-environ "1.2.0"]]
   :main tovi.core/-main
   :repl-options {:init-ns user}
-  :profiles {})
+  :profiles {:default [:base :system :user :provided :dev :local-dev]
+             :dev {:main user
+                   :source-paths ["dev"]
+                   :plugins [[lein-environ "1.2.0"]]}})

@@ -4,62 +4,38 @@
 						[buddy.hashers :refer [encrypt]]
 						[tovi.db :refer [query query-one]]))
 
-;; Admin user functions
-
 (defn get-all-users [db]
-	(try
-		(let [users (-> (helpers/select :*)
-									(helpers/from :users)
-									honey/format
-									(query db))
-					result (map #(dissoc % :password) users)]
-			result)
-		(catch Exception e
-			(println e))))
+	(-> (helpers/select :id :name :last_name :email)
+		(helpers/from :users)
+		honey/format
+		(query db)))
 
 (defn get-user-by-id [db id]
-	(try
-		(let [user (-> (helpers/select :id :name :last_name :email)
-								 (helpers/from :users)
-								 (helpers/where := :id id)
-								 honey/format
-								 (query-one db))]
-			user)
-		(catch Exception e
-			(println e))))
+	(-> (helpers/select :id :name :last_name :email)
+		(helpers/from :users)
+		(helpers/where := :id id)
+		honey/format
+		(query-one db)))
 
-(defn create-user [db {:keys [name last_name email pw]}]
-	(try
-		(let [encrypted-pw (encrypt pw)
-					user (-> (helpers/insert-into :users)
-								 (helpers/columns :name :last_name :email :password)
-								 (helpers/values [[name last_name email encrypted-pw]])
-								 honey/format
-								 (query-one db))
-					result (dissoc user :password)]
-			result)
-		(catch Exception e
-			(println e))))
+(defn create-user [db {:keys [name last-name email pw]}]
+	(-> (helpers/insert-into :users)
+		(helpers/columns :name :last_name :email :password)
+		(helpers/values [[name last-name email (encrypt pw)]])
+		honey/format
+		(query-one db)
+		(dissoc :password)))
 
-(defn update-user [db id {:keys [name last_name]}]
-	(try
-		(let [user (-> (helpers/update :users)
-								 (helpers/set0 {:name name :last_name last_name})
-								 (helpers/where := :id id)
-								 honey/format
-								 (query-one db)
-								 (dissoc :password))]
-			user)
-		(catch Exception e
-			(println e))))
+(defn update-user [db id {:keys [name last-name]}]
+	(-> (helpers/update :users)
+		(helpers/set0 {:name name :last_name last-name})
+		(helpers/where := :id id)
+		honey/format
+		(query-one db)
+		(dissoc :password)))
 
 (defn delete-user [db id]
-	(try
-		(let [result (-> (helpers/delete-from :users)
-									 (helpers/where := :id id)
-									 honey/format
-									 (query-one db)
-									 (dissoc :password))]
-			result)
-		(catch Exception e
-			(println e))))
+	(-> (helpers/delete-from :users)
+		(helpers/where := :id id)
+		honey/format
+		(query-one db)
+		(dissoc :password)))

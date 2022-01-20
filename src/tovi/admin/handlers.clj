@@ -1,67 +1,48 @@
 (ns tovi.admin.handlers
-	(:require [tovi.admin.db :as database]))
-
-;; Admin user functions
+	(:require [tovi.exceptions :as exc]
+						[ring.util.response :as rr]
+						[tovi.admin.db :as database]))
 
 (defn get-all-users [{:keys [parameters db]}]
-	(println parameters)
-	(println "pepe")
-	(let [users (database/get-all-users db)]
-		(if users
-			{:status 200 :body {:result :ok
-													:msg "Users retrieved successfully"
-													:errors []
-													:users users}}
-			{:status 200 :body {:result :ko
-													:msg "Empty list of users"
-													:errors ["Empty list of users"]}})))
+	(try
+		(if-let [users (database/get-all-users db)]
+			(rr/response users)
+			(rr/not-found {:errors ["Empty list of users"]}))
+		(catch Exception e
+			(exc/handle-exception e))))
 
 (defn get-user-by-id [{:keys [parameters db]}]
-	(let [id (get-in parameters [:path :id])
-				user (database/get-user-by-id db id)]
-		(if user
-			{:status 200 :body {:result :ok
-													:msg "User retrieved successfully"
-													:errors []
-													:user user}}
-			{:status 200 :body {:result :ko
-													:msg (format "User with id %d does not exit" id)
-													:errors [(format "User with id %d does not exit" id)]}})))
+	(try
+		(let [id (get-in parameters [:path :id])]
+			(if-let [user (database/get-user-by-id db id)]
+				(rr/response user)
+				(rr/not-found {:errors [(format "User with id %d does not exit" id)]})))
+		(catch Exception e
+			(exc/handle-exception e))))
 
-;; Administrators could create new users.
+;; Administrators could create users
 (defn create-user [{:keys [parameters db]}]
-	(let [body (:body parameters)
-				user (database/create-user db body)]
-		(if user
-			{:status 200 :body {:result :ok
-													:msg "User successfully added"
-													:errors []
-													:user user}}
-			{:status 200 :body {:result :ko
-													:msg "User could not been created"
-													:errors ["User could not been created"]}})))
+	(try
+		(if-let [user (database/create-user db (:body parameters))]
+			(rr/created "" {:user user})
+			(rr/status 412 {:errors ["Invalid values"]}))
+		(catch Exception e
+			(exc/handle-exception e))))
 
 (defn update-user [{:keys [parameters db]}]
-	(let [id (get-in parameters [:path :id])
-				body (:body parameters)
-				user (database/update-user db id body)]
-		(if user
-			{:status 200 :body {:result :ok
-													:msg "User successfully updated"
-													:errors []
-													:user user}}
-			{:status 200 :body {:result :ko
-													:msg "User could not been updated"
-													:errors ["User could not been updated"]}})))
+	(try
+		(let [id (get-in parameters [:path :id]) body (:body parameters)]
+			(if-let [user (database/update-user db id body)]
+				(rr/response {:success (format "User with id %d successfully updated" id)})
+				(rr/status 412 {:errors ["Invalid values"]})))
+		(catch Exception e
+			(exc/handle-exception e))))
 
 (defn delete-user [{:keys [parameters db]}]
-	(let [id (get-in parameters [:path :id])
-				deleted-user (database/delete-user db id)]
-		(if deleted-user
-			{:status 200 :body {:result :ok
-													:msg "User successfully deleted"
-													:errors ["User successfully deleted"]
-													:user deleted-user}}
-			{:status 200 :body {:result :ok
-													:msg "User could not been deleted"
-													:errors ["User could not been deleted"]}})))
+	(try
+		(if-let [deleted-user (->> (get-in parameters [:path :id])
+														(database/delete-user db))]
+			(rr/response {:success "User successfully deleted"})
+			(rr/status 412 {:errors ["User could not been deleted"]}))
+		(catch Exception e
+			(exc/handle-exception e))))

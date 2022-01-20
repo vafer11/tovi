@@ -1,44 +1,40 @@
 (ns tovi.accounts.handlers
-	(:require [tovi.accounts.db :as database]
-						[tovi.utils.auth :as auth]))
+	(:require [tovi.exceptions :as exc]
+					  [tovi.utils.auth :as auth]
+						[ring.util.response :as rr]
+						[tovi.accounts.db :as database]))
 
 (defn signup [{:keys [parameters db]}]
-	(let [user (database/signup db (:body parameters))]
-		(if user
-			{:status 200 :body {:result :ok
-													:msg "User successfully signed up"
-													:errors []
-													:user user
-													:token (auth/get-token user)}}
-			{:status 200 :body {:result :ko
-													:msg "Invalid values"
-													:errors ["Invalid values"]}})))
+	(try
+		(if-let [user (database/signup db (:body parameters))]
+			(rr/created "" {:id (:id user) :token (auth/get-token user)})
+			(rr/status {:body ["Invalid values"]} 412))
+		(catch Exception e
+			(exc/handle-signup-exception e))))
 
 (defn signin [{:keys [parameters db]}]
-	(let [user (database/signin db (:body parameters))]
-		(if user
-			{:status 200 :body {:result :ok
-													:msg "User successfully signed in"
-													:errors []
-													:user user
-													:token (auth/get-token user)}}
-			{:status 200 :body {:result :ko
-													:msg "Invalid user or password"
-													:errors ["Invalid user or password"]}})))
+	(try
+		(if-let [user (database/signin db (:body parameters))]
+			(rr/created "" {:user user :token (auth/get-token user)})
+			(rr/status {:body ["Invalid user or password"]} 412))
+		(catch Exception e
+			(exc/handle-exception e))))
 
 (defn update-account [{:keys [parameters db]}]
-	(let [id (get-in parameters [:path :id])
-				body (:body parameters)
-				user (database/update-account db id body)]
-		(if user
-			{:status 200 :body {:result :ok
-													:msg "Account successfully updated"
-													:errors []
-													:user user}}
-			{:status 200 :body {:result :ko
-													:msg "Account could not been updated"
-													:errors ["Account could not been updated"]}})))
+	(try
+		(if (database/update-account db (:body parameters))
+			(rr/response {:success "User successfully updated"})
+			(rr/status {:body ["Invalid values"]} 412))
+		(catch Exception e
+			(exc/handle-exception e))))
+
+(defn change-pw [{:keys [parameters db]}]
+	(try
+		(if (database/change-pw db (:body parameters))
+			(rr/response {:success "Password successfully changed"})
+			(rr/status {:body ["Invalid values"]} 412))
+		(catch Exception e
+			(exc/handle-exception e))))
 
 (defn signout [{:keys [db]}]
-	(println "db: " db)
-	{:status 200 :body "ok"})
+	{:status 200 :body {:success "Successfully logged out"}})
