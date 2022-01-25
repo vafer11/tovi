@@ -7,7 +7,7 @@
 	(try
 		(if-let [users (database/get-all-users db)]
 			(rr/response users)
-			(rr/not-found {:errors ["Empty list of users"]}))
+			(rr/not-found ["Empty list of users"]))
 		(catch Exception e
 			(exc/handle-exception e))))
 
@@ -16,7 +16,7 @@
 		(let [id (get-in parameters [:path :id])]
 			(if-let [user (database/get-user-by-id db id)]
 				(rr/response user)
-				(rr/not-found {:errors [(format "User with id %d does not exit" id)]})))
+				(rr/not-found [(format "User with id %d does not exit" id)])))
 		(catch Exception e
 			(exc/handle-exception e))))
 
@@ -25,7 +25,7 @@
 	(try
 		(if-let [user (database/create-user db (:body parameters))]
 			(rr/created "" {:user user})
-			(rr/status 412 {:errors ["Invalid values"]}))
+			(rr/status {:body ["Invalid values"]} 412))
 		(catch Exception e
 			(exc/handle-exception e))))
 
@@ -34,7 +34,7 @@
 		(let [id (get-in parameters [:path :id]) body (:body parameters)]
 			(if-let [user (database/update-user db id body)]
 				(rr/response {:success (format "User with id %d successfully updated" id)})
-				(rr/status 412 {:errors ["Invalid values"]})))
+				(rr/status {:body ["Invalid values"]} 412)))
 		(catch Exception e
 			(exc/handle-exception e))))
 
@@ -43,6 +43,6 @@
 		(if-let [deleted-user (->> (get-in parameters [:path :id])
 														(database/delete-user db))]
 			(rr/response {:success "User successfully deleted"})
-			(rr/status 412 {:errors ["User could not been deleted"]}))
+			(rr/status {:body ["User could not been deleted"]} 412))
 		(catch Exception e
 			(exc/handle-exception e))))

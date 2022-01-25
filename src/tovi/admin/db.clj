@@ -17,17 +17,17 @@
 		honey/format
 		(query-one db)))
 
-(defn create-user [db {:keys [name last-name email pw]}]
+(defn create-user [db {:keys [name last-name email pw phone]}]
 	(-> (helpers/insert-into :users)
-		(helpers/columns :name :last_name :email :password)
-		(helpers/values [[name last-name email (encrypt pw)]])
+		(helpers/columns :name :last_name :email :password :phone)
+		(helpers/values [[name last-name email (encrypt pw) phone]])
 		honey/format
 		(query-one db)
 		(dissoc :password)))
 
-(defn update-user [db id {:keys [name last-name]}]
+(defn update-user [db id {:keys [name last-name phone]}]
 	(-> (helpers/update :users)
-		(helpers/set0 {:name name :last_name last-name})
+		(helpers/set0 {:name name :last_name last-name :phone phone})
 		(helpers/where := :id id)
 		honey/format
 		(query-one db)
