@@ -13,6 +13,13 @@
 	 :name string?
 	 :recipe_id int?})
 
+(def recipe
+	{:id int?
+	 :name string?
+	 :description string?
+	 :steps string?
+	 :user_id int?})
+
 (def signup {:id int? :token string?})
 (def signin {:user user :token string?})
 (def create-user {:user user})
@@ -20,3 +27,4 @@
 (def errors [string?])
 (def success {:success string?})
 (def products [product])
+(def recipes [recipe])

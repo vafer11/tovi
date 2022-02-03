@@ -1,37 +1,19 @@
 (ns tovi.orders.db
 	(:require [honeysql.core :as honey]
-						[tovi.db :refer [query-one query]]
+						[tovi.db :refer [insert select select-by update-by delete-by]]
 						[honeysql.helpers :as helpers]))
 
 (defn insert-product [db {:keys [name recipe-id]}]
-	(-> (helpers/insert-into :products)
-		(helpers/columns :name :recipe_id)
-		(helpers/values [[name recipe-id]])
-		honey/format
-		(query-one db)))
+	(insert db :products {:name name :recipe_id recipe-id}))
 
 (defn get-products [db]
-	(-> (helpers/select :*)
-		(helpers/from :products)
-		honey/format
-		(query db)))
+	(select db :products))
 
 (defn get-product-by-id [db id]
-	(-> (helpers/select :*)
-		(helpers/from :products)
-		(helpers/where := :id id)
-		honey/format
-		(query-one db)))
+	(select-by db :products [:= :id id]))
 
 (defn update-product [db id {:keys [name]}]
-	(-> (helpers/update :products)
-		(helpers/set0 {:name name})
-		(helpers/where := :id id)
-		honey/format
-		(query-one db)))
+	(update-by db :products {:name name} [:= :id id]))
 
 (defn delete-product [db id]
-	(-> (helpers/delete-from :products)
-		(helpers/where := :id id)
-		honey/format
-		(query-one db)))
+	(delete-by db :products [:= :id id]))

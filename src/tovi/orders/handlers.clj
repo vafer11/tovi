@@ -10,7 +10,7 @@
 			(rr/created "" product)
 			(rr/status {:body ["Product could not been added"]} 412))
 		(catch Exception e
-			(exc/handle-fk-exception e "products"))))
+			(exc/handle-exception e))))
 
 (defn get-products [{:keys [parameters db]}]
 	(try

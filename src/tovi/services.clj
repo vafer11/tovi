@@ -12,7 +12,8 @@
 		[tovi.middleware.auth :refer [wrap-jwt-authenticated]]
 		[tovi.accounts.routes :refer [account-routes]]
 		[tovi.admin.routes :refer [admin-routes]]
-		[tovi.orders.routes :refer [product-routes]]))
+		[tovi.orders.routes :refer [product-routes]]
+		[tovi.recipes.routes :refer [recipe-routes]]))
 
 (defn routes []
 	[["/swagger.json"
@@ -24,7 +25,8 @@
 	 ["/api/v1"
 		account-routes
 		admin-routes
-		product-routes]])
+		product-routes
+		recipe-routes]])
 
 (defn router-config [db]
 	{:exception pretty/exception

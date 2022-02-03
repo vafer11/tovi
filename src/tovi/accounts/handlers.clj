@@ -10,12 +10,12 @@
 			(rr/created "" {:id (:id user) :token (auth/get-token user)})
 			(rr/status {:body ["Invalid values"]} 412))
 		(catch Exception e
-			(exc/handle-signup-exception e))))
+			(exc/handle-exception e))))
 
 (defn signin [{:keys [parameters db]}]
 	(try
 		(if-let [user (database/signin db (:body parameters))]
-			(rr/created "" {:user user :token (auth/get-token user)})
+			(rr/response {:user user :token (auth/get-token user)})
 			(rr/status {:body ["Invalid user or password"]} 412))
 		(catch Exception e
 			(exc/handle-exception e))))

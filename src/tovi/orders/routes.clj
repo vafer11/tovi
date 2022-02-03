@@ -3,7 +3,6 @@
 						[tovi.responses :as response]
 						[tovi.orders.handlers :as handler]))
 
-
 (def product-routes
 	["/product"
 	 {:swagger {:tags ["product"]}}
@@ -14,7 +13,7 @@
 						:handler handler/create-product}
 		 :get  {:summary "Get all products"
 						:parameters {:header {:authorization string?}}
-						:responses {200 {:body response/products}}
+						:responses {200 {:body response/products} 404 {:body response/errors}}
 						:handler handler/get-products}}]
 	 ["/id/:id"
 		{:get {:summary    "Get a product by id"

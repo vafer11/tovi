@@ -10,6 +10,9 @@
 (s/def ::new-pw string?)
 (s/def ::confirm-pw string?)
 (s/def ::recipe-id int?)
+(s/def ::description string?)
+(s/def ::steps string?)
+(s/def ::user-id int?)
 
 ;;:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ;; REQUESTS BODY SPEC
@@ -25,3 +28,6 @@
 
 (s/def ::create-product (s/keys :req-un [::name ::recipe-id]))
 (s/def ::update-product (s/keys :req-un [::name]))
+
+(s/def ::create-recipe (s/keys :req-un [::name ::description ::steps ::user-id]))
+(s/def ::update-recipe (s/keys :req-un [::name ::description ::steps]))

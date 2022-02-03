@@ -9,13 +9,13 @@
 	 ["/signup"
 		{:post {:summary "Sign up a new account"
 						:parameters {:body ::s/signup}
-						:responses {200 {:body response/signup} 412 {:body response/errors}}
+						:responses {201 {:body response/signup} 412 {:body response/errors}}
 						:handler handler/signup}}]
 	 ["/signin"
-		{:post {:summary "Sign in into your account with your user and password"
-						:parameters {:body ::s/signin}
-						:responses {200 {:body response/signin} 412 {:body response/errors}}
-						:handler handler/signin}}]
+		{:put {:summary "Sign in into your account with your user and password"
+					 :parameters {:body ::s/signin}
+					 :responses {200 {:body response/signin} 412 {:body response/errors}}
+					 :handler handler/signin}}]
 	 ["/update"
 		{:put {:summary "Update your account"
 					 :parameters {:header {:authorization string?} :body ::s/update-account}
@@ -28,6 +28,6 @@
 					 :handler handler/change-pw}}]
 
 	 ["/signout"
-		{:post {:summary "Sign out from your account"
-						:parameters {:header {:authorization string?}}
-						:handler handler/signout}}]])
+		{:put {:summary "Sign out from your account"
+					 :parameters {:header {:authorization string?}}
+					 :handler handler/signout}}]])
