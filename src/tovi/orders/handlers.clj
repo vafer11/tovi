@@ -14,9 +14,8 @@
 
 (defn get-products [{:keys [parameters db]}]
 	(try
-		(if-let [products (database/get-products db)]
-			(rr/response products)
-			(rr/not-found ["Empty list of products"]))
+		(when-let [products (database/get-products db)]
+			(rr/response products))
 		(catch Exception e
 			(exc/handle-exception e))))
 
@@ -25,25 +24,27 @@
 		(let [id (-> parameters :path :id)]
 			(if-let [product (database/get-product-by-id db id)]
 				(rr/response product)
-				(rr/not-found [(format "Product with the id %d does not exits" id)])))
+				(rr/not-found [(format "Product with id %s does not exits" id)])))
 		(catch Exception e
 			(exc/handle-exception e))))
 
 (defn update-product [{:keys [parameters db]}]
 	(try
-		(let [id (-> parameters :path :id) body (:body parameters)]
-			(if-let [product (database/update-product db id body)]
-				(rr/response {:success "Product successfully updated"})
-				(rr/status {:body ["Product could not been updated"]})))
+		(let [id (-> parameters :path :id) body (:body parameters)
+					result (database/update-product db id body)]
+			(if (not= 0 (:next.jdbc/update-count result))
+				(rr/response {:success (format "Product with id %s successfully updated" id)})
+				(rr/status {:body [(format "Product with id %s could not been updated" id)]} 412)))
 		(catch Exception e
 			(exc/handle-exception e))))
 
 (defn delete-product [{:keys [parameters db]}]
 	(try
-		(let [id (-> parameters :path :id)]
-			(if-let [product (database/delete-product db id)]
+		(let [id (-> parameters :path :id)
+					result (database/delete-product db id)]
+			(if (not= 0 (:next.jdbc/update-count result))
 				(rr/response {:success (format "Product with id %s has been successfully deleted" id)})
-				(rr/status {:body ["Product could not been deleted"]} 412)))
+				(rr/status {:body [(format "Product with id %s could not been deleted" id)]} 412)))
 		(catch Exception e
 			(exc/handle-exception e))))
 

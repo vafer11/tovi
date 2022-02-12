@@ -11,7 +11,9 @@
 (def product
 	{:id int?
 	 :name string?
-	 :recipe_id int?})
+	 :recipe_id int?
+	 :unit string?
+	 :weight int?})
 
 (def recipe
 	{:id int?
@@ -19,6 +21,10 @@
 	 :description string?
 	 :steps string?
 	 :user_id int?})
+
+(def ingredient
+	{:id int?
+	 :name string?})
 
 (def signup {:id int? :token string?})
 (def signin {:user user :token string?})
@@ -28,3 +34,4 @@
 (def success {:success string?})
 (def products [product])
 (def recipes [recipe])
+(def ingredients [ingredient])

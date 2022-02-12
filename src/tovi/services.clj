@@ -13,7 +13,7 @@
 		[tovi.accounts.routes :refer [account-routes]]
 		[tovi.admin.routes :refer [admin-routes]]
 		[tovi.orders.routes :refer [product-routes]]
-		[tovi.recipes.routes :refer [recipe-routes]]))
+		[tovi.recipes.routes :refer [recipe-routes ingredient-routes]]))
 
 (defn routes []
 	[["/swagger.json"
@@ -25,8 +25,9 @@
 	 ["/api/v1"
 		account-routes
 		admin-routes
-		product-routes
-		recipe-routes]])
+		ingredient-routes
+		recipe-routes
+		product-routes]])
 
 (defn router-config [db]
 	{:exception pretty/exception

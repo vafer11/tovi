@@ -16,15 +16,16 @@
 	(try
 		(if-let [user (database/signin db (:body parameters))]
 			(rr/response {:user user :token (auth/get-token user)})
-			(rr/status {:body ["Invalid user or password"]} 412))
+			(rr/status {:body ["Invalid email or password"]} 412))
 		(catch Exception e
 			(exc/handle-exception e))))
 
 (defn update-account [{:keys [parameters db]}]
 	(try
-		(if (database/update-account db (:body parameters))
-			(rr/response {:success "User successfully updated"})
-			(rr/status {:body ["Invalid values"]} 412))
+		(let [result (database/update-account db (:body parameters))]
+			(if (not= 0 (:next.jdbc/update-count result))
+				(rr/response {:success "User successfully updated"})
+				(rr/status {:body ["User could not been updated"]} 412)))
 		(catch Exception e
 			(exc/handle-exception e))))
 

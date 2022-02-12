@@ -9,10 +9,9 @@
 	 {:swagger {:tags ["admin"]}}
 	 [""
 		{:get {:summary "Get all users"
-					 :middleware [wrap-authenticated?]
 					 :parameters {:header {:authorization string?}}
-					 :responses {200 {:body response/users} 404 {:body response/errors}}
-					 :handler handler/get-all-users}
+					 :responses {200 {:body response/users}}
+					 :handler handler/get-users}
 		 :post {:summary "Create a new user"
 						:parameters {:header {:authorization string?} :body ::s/signup}
 						:responses {201 {:body response/create-user} 412 {:body response/errors}}

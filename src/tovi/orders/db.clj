@@ -1,19 +1,21 @@
 (ns tovi.orders.db
-	(:require [honeysql.core :as honey]
-						[tovi.db :refer [insert select select-by update-by delete-by]]
+	(:require [next.jdbc.sql :as sql]
+						[honeysql.core :as honey]
+						[tovi.db :refer [rs-config]]
 						[honeysql.helpers :as helpers]))
 
-(defn insert-product [db {:keys [name recipe-id]}]
-	(insert db :products {:name name :recipe_id recipe-id}))
+(defn insert-product [db product]
+	(sql/insert! db :products product rs-config))
 
 (defn get-products [db]
-	(select db :products))
+	(sql/query db  ["SELECT * FROM products"] rs-config))
 
 (defn get-product-by-id [db id]
-	(select-by db :products [:= :id id]))
+	(-> (sql/query db ["SELECT * FROM products WHERE id = ?" id] rs-config)
+		first))
 
-(defn update-product [db id {:keys [name]}]
-	(update-by db :products {:name name} [:= :id id]))
+(defn update-product [db id product]
+	(sql/update! db :products product {:id id} rs-config))
 
 (defn delete-product [db id]
-	(delete-by db :products [:= :id id]))
+	(sql/delete! db :products {:id id} rs-config))

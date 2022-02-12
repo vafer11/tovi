@@ -13,7 +13,7 @@
 						:handler handler/create-product}
 		 :get  {:summary "Get all products"
 						:parameters {:header {:authorization string?}}
-						:responses {200 {:body response/products} 404 {:body response/errors}}
+						:responses {200 {:body response/products}}
 						:handler handler/get-products}}]
 	 ["/id/:id"
 		{:get {:summary    "Get a product by id"

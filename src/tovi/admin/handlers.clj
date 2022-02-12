@@ -3,11 +3,10 @@
 						[ring.util.response :as rr]
 						[tovi.admin.db :as database]))
 
-(defn get-all-users [{:keys [parameters db]}]
+(defn get-users [{:keys [parameters db]}]
 	(try
-		(if-let [users (database/get-all-users db)]
-			(rr/response users)
-			(rr/not-found ["Empty list of users"]))
+		(if-let [users (database/get-users db)]
+			(rr/response users))
 		(catch Exception e
 			(exc/handle-exception e))))
 
@@ -31,18 +30,20 @@
 
 (defn update-user [{:keys [parameters db]}]
 	(try
-		(let [id (get-in parameters [:path :id]) body (:body parameters)]
-			(if-let [user (database/update-user db id body)]
+		(let [id (get-in parameters [:path :id]) body (:body parameters)
+					result (database/update-user db id body)]
+			(if (not= 0 (:next.jdbc/update-count result))
 				(rr/response {:success (format "User with id %d successfully updated" id)})
-				(rr/status {:body ["Invalid values"]} 412)))
+				(rr/status {:body [(format "User with id %d could not been updated " id)]} 412)))
 		(catch Exception e
 			(exc/handle-exception e))))
 
 (defn delete-user [{:keys [parameters db]}]
 	(try
-		(if-let [deleted-user (->> (get-in parameters [:path :id])
-														(database/delete-user db))]
-			(rr/response {:success "User successfully deleted"})
-			(rr/status {:body ["User could not been deleted"]} 412))
+		(let [id (-> parameters :path :id)
+					result (database/delete-user db id)]
+			(if (not= 0 (:next.jdbc/update-count result))
+				(rr/response {:success (format "User with id %s successfully deleted" id)})
+				(rr/status {:body [(format "User with id %s could not been deleted" id)]} 412)))
 		(catch Exception e
 			(exc/handle-exception e))))

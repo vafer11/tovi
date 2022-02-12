@@ -1,34 +1,36 @@
 (ns tovi.admin.db
 	(:require [tovi.utils :as utils]
+						[next.jdbc.sql :as sql]
 						[honeysql.core :as honey]
+						[tovi.db :refer [rs-config]]
 						[honeysql.helpers :as helpers]
-						[buddy.hashers :refer [encrypt]]
-						[tovi.db :refer [insert select select-by update-by delete-by]]))
+						[buddy.hashers :refer [encrypt]]))
 
-(defn get-all-users [db]
-	(mapv
-		#(dissoc % :password)
-		(select db :users)))
+(defn get-users [db]
+	(sql/query
+		db
+		["SELECT id, name, last_name, email, created, last_signin, active, phone FROM users"]
+		rs-config))
 
 (defn get-user-by-id [db id]
 	(->
-		(select-by db :users [:= :id id])
-		(dissoc :password)))
+		(sql/query db
+			["SELECT id, name, last_name, email, created, last_signin, active, phone
+			FROM users
+			WHERE id = ?" id]
+			rs-config)
+		first))
 
-(defn create-user [db {:keys [name last-name email pw phone]}]
-	(-> (insert db :users {:name name
-												 :last_name last-name
-												 :email email
-												 :password (encrypt pw)
-												 :phone phone})
-		(dissoc :password)))
+(defn create-user [db user]
+	(let [values (-> user
+								 (update-in [:password] encrypt)
+								 (dissoc :confirm_pw))]
+		(-> (sql/insert! db :users values rs-config)
+			(utils/dissoc-values [:password :active :last_signin :created]))))
 
-(defn update-user [db id {:keys [name last-name phone]}]
-	(-> (update-by db :users {:name name
-														:last_name last-name
-														:phone phone}
-				[:= :id id])
+(defn update-user [db id user]
+	(-> (sql/update! db :users user {:id id} rs-config)
 		(dissoc :password)))
 
 (defn delete-user [db id]
-	(delete-by db :users [:= :id id]))
+	(sql/delete! db :users {:id id} rs-config))
