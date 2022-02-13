@@ -28,17 +28,33 @@
 	(let [recipe (dissoc recipe :ingredients)]
 		(jdbc/with-transaction [tx db]
 			(let [recipe_id (:id (sql/insert! tx :recipes recipe rs-config))
-						fun (fn [acc v] (conj acc (assoc v :recipe_id recipe_id)))
+						fun (fn [acc v]
+									(conj acc (assoc v :recipe_id recipe_id)))
 						ingredients (reduce fun [] ingredients)]
 				(insert ingredients :recipes_ingredients tx)
 				{:recipe_id recipe_id}))))
+
+(defn update-recipes_ingredients [db recipe_id ingredients]
+	(let [fun (fn [v]
+							(let [{:keys [operation ri_id]} v
+										value (-> v (dissoc :operation) (assoc :recipe_id recipe_id))]
+								(cond
+									(= "insert" operation) (sql/insert! db
+																					 :recipes_ingredients value rs-config)
+									(= "update" operation) (sql/update! db
+																					 :recipes_ingredients value {:ri_id ri_id
+																																			 :recipe_id recipe_id} rs-config)
+									(= "delete" operation) (sql/delete! db
+																					 :recipes_ingredients {:ri_id ri_id
+																																 :recipe_id recipe_id} rs-config))))
+				result (map fun ingredients)]
+		{:operations (count result)}))
 
 (defn update-recipe [db id {:keys [ingredients] :as recipe}]
 	(let [recipe (dissoc recipe :ingredients)]
 		(jdbc/with-transaction [tx db]
 			(sql/update! tx :recipes recipe {:id id} rs-config)
-			;next recipes-ingredients relationship need to be updated (unit and quantity)
-			)))
+			(update-recipes_ingredients tx id ingredients))))
 
 (defn delete-recipe [db id]
 	(sql/delete! db :recipes {:id id}))
@@ -46,9 +62,7 @@
 (defn get-recipes [db]
 	(sql/query db ["SELECT * FROM recipes"] rs-config))
 
-; Ver si esto se puede hacer mejor
 (defn get-recipe-by-id [db id]
-	(println id)
 	(let [recipe (-> (sql/query db ["SELECT * FROM recipes WHERE id = ?" id] rs-config) first)
 				result (query {:select [:ri.ri_id :i.name :ri.unit :ri.quantity]
 											 :from [[:recipes :r]]

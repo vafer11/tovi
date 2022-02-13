@@ -14,10 +14,13 @@
 (s/def ::steps string?)
 (s/def ::user_id int?)
 (s/def ::ingredient_id int?)
+(s/def ::ri_id int?)
 (s/def ::unit string?)
 (s/def ::quantity int?)
+(s/def ::operation string?)
 (s/def ::weight int?)
-(s/def ::ingredient (s/keys :req-un [::ingredient_id ::unit ::quantity]))
+(s/def ::ingredient (s/keys :req-un [::ingredient_id ::unit ::quantity]
+											:opt-un [::ri_id ::operation]))
 (s/def ::ingredients (s/coll-of ::ingredient))
 
 ;;:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
