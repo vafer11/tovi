@@ -68,11 +68,15 @@
 
 (defn get-recipe-by-id [db id]
 	(if-let [recipe (-> (sql/query db ["SELECT * FROM recipes WHERE id = ?" id] rs-config) first)]
-		(let [result (query {:select [:ri.ri_id :i.name :ri.unit :ri.quantity]
-												 :from [[:recipes :r]]
-												 :join [[:recipes_ingredients :ri] [:= :r.id :recipe_id]
-																[:ingredients :i] [:= :ri.ingredient_id :i.id]]
-												 :where [:= :r.id id]} db)
+		(let [result (sql/query db  ["SELECT ri.ri_id, i.name, ri.unit, ri.quantity
+																	FROM recipes as r
+																	INNER JOIN recipes_ingredients as ri ON r.id = recipe_id
+																	INNER JOIN ingredients as i ON ri.ingredient_id = i.id
+																	WHERE r.id = ?" id] rs-config)
 					fun (fn [acc {:keys [ri_id name unit quantity]}]
 								(conj acc {:ri_id ri_id :name name :unit unit :quantity quantity}))]
 			(->> result (reduce fun []) (assoc recipe :ingredients)))))
+
+
+
+(comment result (-> (sql/query db  rs-config) first))
