@@ -25,7 +25,7 @@
 					result (database/update-recipe db id body)]
 			(if (not= 0 (:next.jdbc/update-count result))
 				(rr/response {:success (format "Recipe with id %s updated successfully" id)})
-				(rr/status {:body [(format "Recipe with id %s could not been updated" id)]} 412)))
+				(rr/status {:body [(format "Recipe with id %s could not be updated" id)]} 412)))
 		(catch Exception e
 			(exc/handle-exception e))))
 
@@ -53,7 +53,7 @@
 	(try
 		(if-let [ingredient (database/insert-ingredient db (:body parameters))]
 			(rr/created "" ingredient)
-			(rr/status {:body ["Ingredient could not been added"]} 412))
+			(rr/status {:body ["Ingredient could not be added"]} 412))
 		(catch Exception e
 			(exc/handle-exception e))))
 
@@ -70,7 +70,7 @@
 					result (database/update-ingredient db id body)]
 			(if (not= 0 (:next.jdbc/update-count result))
 				(rr/response {:success (format "Ingredient with id %s updated successfully" id)})
-				(rr/status {:body [(format "Ingredient with id %s could not been updated" id)]} 412)))
+				(rr/status {:body [(format "Ingredient with id %s could not be updated" id)]} 412)))
 		(catch Exception e
 			(exc/handle-exception e))))
 
@@ -89,6 +89,6 @@
 					result (database/delete-ingredient db id)]
 			(if (not= 0 (:next.jdbc/update-count result))
 				(rr/response {:success (format "Ingredient with id %s successfully deleted" id)})
-				(rr/not-found [(format "Ingredient with id %s could not been deleted" id)])))
+				(rr/not-found [(format "Ingredient with id %s could not be deleted" id)])))
 		(catch Exception e
 			(exc/handle-exception e))))

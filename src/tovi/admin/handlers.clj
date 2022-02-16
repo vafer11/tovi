@@ -34,7 +34,7 @@
 					result (database/update-user db id body)]
 			(if (not= 0 (:next.jdbc/update-count result))
 				(rr/response {:success (format "User with id %d successfully updated" id)})
-				(rr/status {:body [(format "User with id %d could not been updated " id)]} 412)))
+				(rr/status {:body [(format "User with id %d could not be updated" id)]} 412)))
 		(catch Exception e
 			(exc/handle-exception e))))
 
@@ -44,6 +44,6 @@
 					result (database/delete-user db id)]
 			(if (not= 0 (:next.jdbc/update-count result))
 				(rr/response {:success (format "User with id %s successfully deleted" id)})
-				(rr/status {:body [(format "User with id %s could not been deleted" id)]} 412)))
+				(rr/status {:body [(format "User with id %s could not be deleted" id)]} 412)))
 		(catch Exception e
 			(exc/handle-exception e))))

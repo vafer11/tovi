@@ -29,6 +29,7 @@
 				(foreign-constraint-exception? msg "update or delete" "recipes" "fk_products_recipe_id") :delete-fk-products-recipe-id
 				(foreign-constraint-exception? msg "insert or update" "recipes" "fk_user") :insert-fk-user-id
 				(foreign-constraint-exception? msg "insert or update" "recipes_ingredients" "fk_ingredients") :insert-fk-ingredient-id
+				(foreign-constraint-exception? msg "insert or update" "recipes_ingredients" "fk_recipe") :recipes_ingredients-not-recipe-id
 				:else :default-exception))
 		(rr/status {:body ["Server error occurred"]} 500)))
 
@@ -51,6 +52,9 @@
 
 (defmethod handle-exception :insert-fk-ingredient-id [_]
 	(rr/status {:body ["The ingredient id does not exist"]} 412))
+
+(defmethod handle-exception :recipes_ingredients-not-recipe-id [_]
+	(rr/status {:body ["The recipe id does not exist"]} 412))
 
 (defmethod handle-exception :default-exception [_]
 	(rr/status {:body ["Server error occurred"]} 500))

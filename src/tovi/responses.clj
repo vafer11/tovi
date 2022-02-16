@@ -5,8 +5,7 @@
 	{:id int?
 	 :name string?
 	 :last_name string?
-	 :email string?
-	 :phone string?})
+	 :email string?})
 
 (def product
 	{:id int?

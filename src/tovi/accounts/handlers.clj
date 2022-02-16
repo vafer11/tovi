@@ -25,7 +25,7 @@
 		(let [result (database/update-account db (:body parameters))]
 			(if (not= 0 (:next.jdbc/update-count result))
 				(rr/response {:success "User successfully updated"})
-				(rr/status {:body ["User could not been updated"]} 412)))
+				(rr/status {:body ["User could not be updated"]} 412)))
 		(catch Exception e
 			(exc/handle-exception e))))
 
@@ -33,7 +33,7 @@
 	(try
 		(if (database/change-pw db (:body parameters))
 			(rr/response {:success "Password successfully changed"})
-			(rr/status {:body ["Invalid values"]} 412))
+			(rr/status {:body ["The password could not be updated"]} 412))
 		(catch Exception e
 			(exc/handle-exception e))))
 

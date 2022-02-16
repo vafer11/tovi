@@ -21,7 +21,6 @@
 (s/def ::weight int?)
 (s/def ::ingredient (s/keys :req-un [::ingredient_id ::unit ::quantity]
 											:opt-un [::ri_id ::operation]))
-(s/def ::ingredients (s/coll-of ::ingredient))
 
 ;;:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 ;; REQUESTS BODY SPEC
@@ -37,10 +36,16 @@
 (s/def ::create-product (s/keys :req-un [::name ::recipe_id ::unit ::weight]))
 (s/def ::update-product (s/keys :req-un [(or ::name ::unit ::weight)]))
 
+(s/def ::create-recipe-ingredient (s/keys :req-un [::ingredient_id ::unit ::quantity]))
+(s/def ::ingredients (s/coll-of ::create-recipe-ingredient))
 (s/def ::create-recipe (s/keys :req-un [::name ::description ::steps ::user_id]
 												 :opt-un [::ingredients]))
+
+(s/def ::update-recipe-ingredient (s/keys :req-un [::ingredient_id ::unit ::quantity]
+																		:opt-un [::ri_id ::operation]))
+(s/def ::update-ingredients (s/coll-of ::update-recipe-ingredient))
 (s/def ::update-recipe (s/keys :req-un [(or ::name ::description ::steps)]
-												 :opt-un [::ingredients]))
+												 :opt-un [::update-ingredients]))
 
 (s/def ::create-ingredient (s/keys :req-un [::name]))
 (s/def ::update-ingredient (s/keys :req-un [::name]))
