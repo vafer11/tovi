@@ -38,15 +38,15 @@
 	(let [fun (fn [acc v]
 							(let [{:keys [operation ri_id]} v
 										value (-> v (dissoc :operation) (assoc :recipe_id recipe_id))]
-								(cond
-									(= "insert" operation)
+								(case operation
+									"insert"
 									(let [result (sql/insert! db :recipes_ingredients value rs-config)]
 										(if result (inc acc) acc))
-									(= "update" operation)
+									"update"
 									(let [result (sql/update! db :recipes_ingredients value {:ri_id ri_id
 																																					 :recipe_id recipe_id} rs-config)]
 										(+ acc (:next.jdbc/update-count result)))
-									(= "delete" operation)
+									"delete"
 									(let [result (sql/delete! db :recipes_ingredients {:ri_id ri_id
 																																		 :recipe_id recipe_id} rs-config)]
 										(+ acc (:next.jdbc/update-count result)))
@@ -76,7 +76,3 @@
 					fun (fn [acc {:keys [ri_id name unit quantity]}]
 								(conj acc {:ri_id ri_id :name name :unit unit :quantity quantity}))]
 			(->> result (reduce fun []) (assoc recipe :ingredients)))))
-
-
-
-(comment result (-> (sql/query db  rs-config) first))
