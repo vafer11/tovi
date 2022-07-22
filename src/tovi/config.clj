@@ -1,5 +1,5 @@
 (ns tovi.config
-	(:require [environ.core :refer [env]]))
+  (:require [environ.core :refer [env]]))
 
 (def port (read-string (:port env)))
 (def db (:db env))

@@ -19,3 +19,6 @@ LICENSE
 
 .lein-env
 profiles.clj
+
+/.clj-kondo
+/.lsp

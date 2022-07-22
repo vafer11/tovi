@@ -1,6 +1,7 @@
 (ns user
-	(:require [integrant.repl :as ig-repl]
-						[tovi.system :as system]))
+  (:require
+   [integrant.repl :as ig-repl]
+   [tovi.system :as system]))
 
 (ig-repl/set-prep! (fn [] system/system-config))
 
