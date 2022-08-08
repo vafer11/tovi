@@ -15,6 +15,5 @@
   (fn [request]
     (if (authenticated? request)
       (handler request)
-      {:status 401 :body {:result :ko
-                          :msg "Unauthorized"
-                          :errors ["Unauthorized"]}})))
+      {:status 401 :body [{:error-key :401
+                           :msg "Unauthorized"}]})))

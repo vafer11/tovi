@@ -7,18 +7,20 @@
             [buddy.hashers :refer [encrypt]]))
 
 (defn get-users [db]
-  (sql/query
-   db
-   ["SELECT id, name, last_name, email, created, last_signin, active, phone FROM users"]
+  (sql/query 
+   db 
+   ["SELECT id, name, last_name, email, created, last_signin, active, phone 
+     FROM users"]
    rs-config))
 
 (defn get-user-by-id [db id]
   (->
-   (sql/query db
-              ["SELECT id, name, last_name, email, created, last_signin, active, phone
-           	   FROM users
-			   WHERE id = ?" id]
-              rs-config)
+   (sql/query
+    db
+    ["SELECT id, name, last_name, email, created, last_signin, active, phone 
+      FROM users 
+      WHERE id = ?" id]
+    rs-config)
    first))
 
 (defn create-user [db user]

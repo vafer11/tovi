@@ -1,10 +1,7 @@
 (ns tovi.recipes.db
   (:require [next.jdbc :as jdbc]
-            [tovi.utils :as utils]
             [next.jdbc.sql :as sql]
-            [honeysql.core :as honey]
-            [honeysql.helpers :as helpers]
-            [tovi.db :refer [rs-config insert query]]))
+            [tovi.db :refer [rs-config insert]]))
 
 ;; :::::::::: Ingredients db functions :::::::::: ;;
 (defn insert-ingredient [db ingredient]
@@ -68,11 +65,11 @@
 
 (defn get-recipe-by-id [db id]
   (if-let [recipe (-> (sql/query db ["SELECT * FROM recipes WHERE id = ?" id] rs-config) first)]
-    (let [result (sql/query db  ["SELECT ri.ri_id, i.name, ri.unit, ri.quantity
+    (let [result (sql/query db  ["SELECT ri.ri_id, i.name, ri.quantity
 																	FROM recipes as r
 																	INNER JOIN recipes_ingredients as ri ON r.id = recipe_id
 																	INNER JOIN ingredients as i ON ri.ingredient_id = i.id
 																	WHERE r.id = ?" id] rs-config)
-          fun (fn [acc {:keys [ri_id name unit quantity]}]
-                (conj acc {:ri_id ri_id :name name :unit unit :quantity quantity}))]
+          fun (fn [acc {:keys [ri_id name quantity]}]
+                (conj acc {:ri_id ri_id :name name :quantity quantity}))]
       (->> result (reduce fun []) (assoc recipe :ingredients)))))

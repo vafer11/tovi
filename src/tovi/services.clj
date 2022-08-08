@@ -1,11 +1,13 @@
 (ns tovi.services
   (:require
+   [reitit.coercion.malli]
+   [reitit.ring.malli]
+   [malli.util :as mu]
    [reitit.ring :as ring]
    [reitit.swagger :as swagger]
    [reitit.swagger-ui :as swagger-ui]
    [reitit.ring.middleware.muuntaja :as muuntaja]
-   [reitit.ring.middleware.exception :as exception]
-   [reitit.coercion.spec]
+   [reitit.ring.middleware.exception :as exception] 
    [reitit.ring.coercion :as coercion]
    [reitit.dev.pretty :as pretty]
    [muuntaja.core :as m]
@@ -36,9 +38,20 @@
                :securityDefinitions {:api_key {:type "apiKey"
                                                :name "Authorization"
                                                :in "header"}}
-               :coercion   reitit.coercion.spec/coercion
+               :coercion (reitit.coercion.malli/create
+                          {;; set of keys to include in error messages
+                           :error-keys #{#_:type :coercion :in :schema :value :errors :humanized #_:transformed}
+                           ;; schema identity function (default: close all map schemas)
+                           :compile mu/closed-schema
+                           ;; strip-extra-keys (effects only predefined transformers)
+                           :strip-extra-keys true
+                           ;; add/set default values
+                           :default-values true
+                           ;; malli options
+                           :options nil})
                :muuntaja   m/instance
-               :middleware [swagger/swagger-feature
+               :middleware [middleware/cors
+                            swagger/swagger-feature
                             muuntaja/format-negotiate-middleware
                             muuntaja/format-response-middleware
                             exception/exception-middleware

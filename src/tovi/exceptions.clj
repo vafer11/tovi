@@ -19,7 +19,7 @@
     false))
 
 (defn dispatch-handle-exception [exc]
-  (log/error exc)
+  ;(log/error exc)
   (if-let [sql-exception? (instance? java.sql.SQLException exc)]
     (let [msg (-> exc (.getMessage))]
       (cond
@@ -31,30 +31,39 @@
         (foreign-constraint-exception? msg "insert or update" "recipes_ingredients" "fk_ingredients") :insert-fk-ingredient-id
         (foreign-constraint-exception? msg "insert or update" "recipes_ingredients" "fk_recipe") :recipes_ingredients-not-recipe-id
         :else :default-exception))
-    (rr/status {:body ["Server error occurred"]} 500)))
+    (rr/status {:body [{:error-key :500
+                        :msg "Server error occurred"}]} 500)))
 
 (defmulti handle-exception dispatch-handle-exception)
 
 (defmethod handle-exception :users-email-key [_]
-  (rr/status {:body ["User with the selected email already exists"]} 412))
+  (rr/status {:body [{:error-key :users-email-key 
+                      :msg "User with the selected email already exists"}]} 412))
 
 (defmethod handle-exception :users-phone-key [_]
-  (rr/status {:body ["User with the selected phone already exists"]} 412))
+  (rr/status {:body [{:error-key :users-phone-key
+                      :msg "User with the selected phone already exists"}]} 412))
 
 (defmethod handle-exception :insert-fk-products-recipe-id [_]
-  (rr/status {:body ["The recipe id does not exist"]} 412))
+  (rr/status {:body [{:error-key :insert-fk-products-recipe-id
+                      :msg "The recipe id does not exist"}]} 412))
 
 (defmethod handle-exception :delete-fk-products-recipe-id [_]
-  (rr/status {:body ["This recipe can not be deleted, cause products reference it"]} 412))
+  (rr/status {:body [{:error-key :delete-fk-products-recipe-id
+                      :msg "This recipe can not be deleted, cause products reference it"}]} 412))
 
 (defmethod handle-exception :insert-fk-user-id [_]
-  (rr/status {:body ["The user id does not exist"]} 412))
+  (rr/status {:body [{:error-key :insert-fk-user-id
+                      :msg "The user id does not exist"}]} 412))
 
 (defmethod handle-exception :insert-fk-ingredient-id [_]
-  (rr/status {:body ["The ingredient id does not exist"]} 412))
+  (rr/status {:body [{:error-key :insert-fk-ingredient-id
+                      :msg "The ingredient id does not exist"}]} 412))
 
 (defmethod handle-exception :recipes_ingredients-not-recipe-id [_]
-  (rr/status {:body ["The recipe id does not exist"]} 412))
+  (rr/status {:body [{:error-key :recipes_ingredients-not-recipe-id
+                      :msg "The recipe id does not exist"}]} 412))
 
 (defmethod handle-exception :default-exception [_]
-  (rr/status {:body ["Server error occurred"]} 500))
+  (rr/status {:body [{:error-key :default-exception
+                      :msg "Server error occurred"}]} 500))

@@ -1,7 +1,7 @@
 (ns tovi.accounts.routes
-  (:require [tovi.spec :as s]
+  (:require [tovi.accounts.schema :as schema]
             [tovi.responses :as response]
-            [tovi.accounts.handlers :as handler]
+            [tovi.accounts.handlers :as handler] 
             [tovi.middleware.auth :refer [wrap-authenticated?]]))
 
 (def account-routes
@@ -9,31 +9,30 @@
    {:swagger {:tags ["account"]}}
    ["/signup"
     {:post {:summary "Sign up a new account"
-            :middleware [wrap-authenticated?]
-            :parameters {:body ::s/signup}
-            :responses {201 {:body response/signup} 412 {:body response/errors}}
+           ;:middleware [wrap-authenticated?]
+            :parameters {:body schema/signup-request}
+            :responses {201 {:body schema/signup-response} 412 {:body response/errors}}
             :handler handler/signup}}]
    ["/signin"
-    {:post {:summary "Sign in into your account with your user and password"
-            :middleware [wrap-authenticated?]
-            :parameters {:body ::s/signin}
-            :responses {200 {:body response/signin} 412 {:body response/errors}}
+    {:post {:summary "Sign in into your account with your email and password"
+            ;:middleware [wrap-authenticated?]
+            :parameters {:body schema/signin-request}
+            :responses {200 {:body schema/signup-response} 412 {:body response/errors}}
             :handler handler/signin}}]
    ["/update"
     {:put {:summary "Update your account"
            :middleware [wrap-authenticated?]
-           :parameters {:header {:authorization string?} :body ::s/update-account}
+           :parameters {:header [:map [:authorization :string]] :body schema/update-account-request}
            :responses {200 {:body response/success} 412 {:body response/errors}}
            :handler handler/update-account}}]
    ["/changepw"
     {:put {:summary "Change your password account"
            :middleware [wrap-authenticated?]
-           :parameters {:header {:authorization string?} :body ::s/change-pw}
+           :parameters {:header [:map [:authorization :string]] :body schema/change-pw-request}
            :responses {200 {:body response/success} 412 {:body response/errors}}
            :handler handler/change-pw}}]
-
    ["/signout"
     {:put {:summary "Sign out from your account"
            :middleware [wrap-authenticated?]
-           :parameters {:header {:authorization string?}}
+           :parameters {:header [:map [:authorization :string]]}
            :handler handler/signout}}]])

@@ -32,9 +32,9 @@
   (let [values (dissoc account :id)]
     (sql/update! db :users values {:id id} rs-config)))
 
-(defn change-pw [db {:keys [id password new_pw]}]
-  (when-let [checked-pw? (check-pw db ["id" id] password)]
-    (let [values {:password (encrypt new_pw)}]
-      (sql/update! db :users values {:id id} rs-config))))
+(defn change-pw [db {:keys [id current_pw new_pw]}]
+  (when (check-pw db ["id" id] current_pw)
+   (let [values {:password (encrypt new_pw)}]
+     (sql/update! db :users values {:id id} rs-config))))
 
 (defn signout [_] nil)
