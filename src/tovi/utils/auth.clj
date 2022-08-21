@@ -6,6 +6,5 @@
 (def backend (backends/jws {:secret jwt-secret}))
 
 (defn get-token [user]
-  (let [{email :email id :id :as user} user
-        token (jwt/sign user jwt-secret)]
-    token))
+  (let [token (jwt/sign user jwt-secret)]
+    (str "Token " token)))

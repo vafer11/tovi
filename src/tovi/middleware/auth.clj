@@ -3,7 +3,6 @@
             [buddy.auth.middleware :refer [wrap-authentication]]
             [tovi.utils.auth :refer [backend]]))
 
-
 ;Enables authentication for your ring handler
 ;set the :identity key of the request to the valid token
 (defn wrap-jwt-authenticated [handler]

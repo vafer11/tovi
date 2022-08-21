@@ -14,11 +14,10 @@
   (sql/delete! db :ingredients {:id id} rs-config))
 
 (defn get-ingredients [db]
-  (sql/query db  ["SELECT * FROM ingredients"] rs-config))
+  (sql/query db ["SELECT * FROM ingredients"] rs-config))
 
 (defn get-ingredient-by-id [db id]
-  (-> (sql/query db ["SELECT * FROM ingredients WHERE id = ?" id] rs-config)
-      first))
+  (first (sql/query db ["SELECT * FROM ingredients WHERE id = ?" id] rs-config)))
 
 ;; :::::::::: Recipes db functions :::::::::: ;;
 (defn insert-recipe [db {:keys [ingredients] :as recipe}]
@@ -60,16 +59,29 @@
 (defn delete-recipe [db id]
   (sql/delete! db :recipes {:id id}))
 
+(defn join-recipe-ingredients [recipes ingredients]
+  (reduce
+   (fn [acc {:keys [id] :as recipe}]
+     (let [recipe-ingredients (filter #(= id (:recipe_id %1)) ingredients)]
+       (-> recipe
+           (assoc :ingredients recipe-ingredients)
+           (cons acc))))
+   []
+   recipes))
+
 (defn get-recipes [db]
-  (sql/query db ["SELECT * FROM recipes"] rs-config))
+  (let [recipes (sql/query db ["SELECT * FROM recipes"] rs-config)
+        recipes-ingredients (sql/query db  ["SELECT ri.ri_id, ri.recipe_id, ri.ingredient_id as i_id, i.name, ri.quantity, ri.percentage 
+                                             FROM recipes as r 
+                                             INNER JOIN recipes_ingredients as ri ON r.id = recipe_id 
+                                             INNER JOIN ingredients as i ON ri.ingredient_id = i.id"] rs-config)]
+    (join-recipe-ingredients recipes recipes-ingredients)))
 
 (defn get-recipe-by-id [db id]
-  (if-let [recipe (-> (sql/query db ["SELECT * FROM recipes WHERE id = ?" id] rs-config) first)]
-    (let [result (sql/query db  ["SELECT ri.ri_id, i.name, ri.quantity
-																	FROM recipes as r
-																	INNER JOIN recipes_ingredients as ri ON r.id = recipe_id
-																	INNER JOIN ingredients as i ON ri.ingredient_id = i.id
-																	WHERE r.id = ?" id] rs-config)
-          fun (fn [acc {:keys [ri_id name quantity]}]
-                (conj acc {:ri_id ri_id :name name :quantity quantity}))]
-      (->> result (reduce fun []) (assoc recipe :ingredients)))))
+  (let [recipes (sql/query db ["SELECT * FROM recipes WHERE id = ?" id] rs-config)
+        recipes-ingredients (sql/query db  ["SELECT ri.ri_id, ri.recipe_id, ri.ingredient_id as i_id, i.name, ri.quantity, ri.percentage 
+                                             FROM recipes as r 
+                                             INNER JOIN recipes_ingredients as ri ON r.id = recipe_id 
+                                             INNER JOIN ingredients as i ON ri.ingredient_id = i.id
+                                             WHERE r.id = ?" id] rs-config)]
+    (first (join-recipe-ingredients recipes recipes-ingredients))))

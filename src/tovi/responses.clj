@@ -1,10 +1,12 @@
 (ns tovi.responses)
 
+(def error
+  [:map
+   [:error-key :keyword]
+   [:msg :string]])
+
 (def errors
-  [:vector
-   [:map
-    [:error-key :keyword]
-    [:msg :string]]])
+  [:vector error])
 
 (def success
   [:map

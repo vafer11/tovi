@@ -37,12 +37,12 @@
 (defmulti handle-exception dispatch-handle-exception)
 
 (defmethod handle-exception :users-email-key [_]
-  (rr/status {:body [{:error-key :users-email-key 
-                      :msg "User with the selected email already exists"}]} 412))
+  (rr/status {:body {:error-key :users-email-key
+                     :msg "User with the selected email already exists"}} 412))
 
 (defmethod handle-exception :users-phone-key [_]
-  (rr/status {:body [{:error-key :users-phone-key
-                      :msg "User with the selected phone already exists"}]} 412))
+  (rr/status {:body {:error-key :users-phone-key
+                     :msg "User with the selected phone already exists"}} 412))
 
 (defmethod handle-exception :insert-fk-products-recipe-id [_]
   (rr/status {:body [{:error-key :insert-fk-products-recipe-id

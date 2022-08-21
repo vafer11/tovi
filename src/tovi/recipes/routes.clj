@@ -14,9 +14,9 @@
             :handler handler/create-recipe}
      :get {:summary "Get all recipes"
            :parameters {:header [:map [:authorization :string]]}
-           :responses {200 {:body schema/recipes-response}}
+           :responses {200 {:body schema/recipes}}
            :handler handler/get-recipes}}]
-   ["/id/:id"
+   ["/:id"
     {:get {:summary "Get recipe by id"
            :parameters {:header [:map [:authorization :string]] :path [:map [:id :int]]}
            :responses {200 {:body schema/recipe} 404 {:body response/errors}}
@@ -43,7 +43,7 @@
            :parameters {:header [:map [:authorization :string]]}
            :responses {200 {:body schema/ingredients}}
            :handler handler/get-ingredients}}]
-   ["/id/:id"
+   ["/:id"
     {:get {:summary "Get ingredient by id"
            :parameters {:header [:map [:authorization :string]] :path [:map [:id :int]]}
            :responses {200 {:body schema/ingredient} 404 {:body response/errors}}

@@ -12,14 +12,22 @@
       [:ingredient_id :int]
       [:quantity :int]]]]])
 
-(def recipe 
+(def recipe
   [:map
    [:id :int]
    [:name :string]
    [:steps :string]
-   [:user_id :int]])
+   [:user_id :int]
+   [:ingredients
+    [:vector 
+     [:map
+      [:ri_id :int]
+      [:i_id :int]
+      [:name :string]
+      [:percentage number?]
+      [:quantity :int]]]]])
 
-(def recipes-response
+(def recipes
   [:vector recipe])
 
 (def update-recipe-ingredient

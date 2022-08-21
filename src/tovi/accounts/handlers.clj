@@ -12,7 +12,7 @@
                       :last_name (:last_name user)
                       :email (:email user)
                       :token (auth/get-token user)})
-      (rr/status {:body [{:error-key :412 :msg "Invalid values"}]} 412))
+      (rr/status {:body {:error-key :412 :msg "Invalid values"}} 412))
     (catch Exception e
       (exc/handle-exception e))))
 
@@ -20,7 +20,7 @@
   (try
     (if-let [user (database/signin db (:body parameters))]
       (rr/response (assoc user :token (auth/get-token user)))
-      (rr/status {:body [{:error-key :412 :msg "Invalid email or password"}]} 412))
+      (rr/status {:body {:error-key :invalid-email-or-pw :msg "Invalid email or password"}} 412))
     (catch Exception e
       (exc/handle-exception e))))
 

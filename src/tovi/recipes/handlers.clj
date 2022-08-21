@@ -13,10 +13,9 @@
     (catch Exception e
       (exc/handle-exception e))))
 
-(defn get-recipes [{:keys [parameters db]}]
+(defn get-recipes [{:keys [_ db]}]
   (try
-    (if-let [recipes (database/get-recipes db)]
-      (rr/response recipes))
+    (rr/response (database/get-recipes db))
     (catch Exception e
       (exc/handle-exception e))))
 
@@ -62,10 +61,9 @@
     (catch Exception e
       (exc/handle-exception e))))
 
-(defn get-ingredients [{:keys [parameters db]}]
+(defn get-ingredients [{:keys [_ db]}]
   (try
-    (if-let [ingredients (database/get-ingredients db)]
-      (rr/response ingredients))
+    (rr/response (database/get-ingredients db)) 
     (catch Exception e
       (exc/handle-exception e))))
 
