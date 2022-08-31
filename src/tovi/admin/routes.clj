@@ -6,7 +6,8 @@
 
 (def admin-routes
   ["/admin/user"
-   {:swagger {:tags ["admin"]}}
+   {:swagger {:tags ["admin"]}
+    :middleware [[wrap-authenticated?]]}
    [""
     {:get {:summary "Get all users"
            :parameters {:header [:map [:authorization :string]]} 

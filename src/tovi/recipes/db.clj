@@ -50,11 +50,11 @@
         operation-count (reduce fun 0 ingredients)]
     {:next.jdbc/update-count operation-count}))
 
-(defn update-recipe [db id {:keys [update-ingredients] :as recipe}]
-  (let [recipe (dissoc recipe :update-ingredients)]
+(defn update-recipe [db id {:keys [ingredients] :as recipe}]
+  (let [recipe (dissoc recipe :ingredients)]
     (jdbc/with-transaction [tx db]
       (sql/update! tx :recipes recipe {:id id} rs-config)
-      (update-recipes_ingredients tx id update-ingredients))))
+      (update-recipes_ingredients tx id ingredients))))
 
 (defn delete-recipe [db id]
   (sql/delete! db :recipes {:id id}))
@@ -71,7 +71,7 @@
 
 (defn get-recipes [db]
   (let [recipes (sql/query db ["SELECT * FROM recipes"] rs-config)
-        recipes-ingredients (sql/query db  ["SELECT ri.ri_id, ri.recipe_id, ri.ingredient_id as i_id, i.name, ri.quantity, ri.percentage 
+        recipes-ingredients (sql/query db  ["SELECT ri.ri_id, ri.recipe_id, ri.ingredient_id, i.name, ri.quantity, ri.percentage 
                                              FROM recipes as r 
                                              INNER JOIN recipes_ingredients as ri ON r.id = recipe_id 
                                              INNER JOIN ingredients as i ON ri.ingredient_id = i.id"] rs-config)]
@@ -79,7 +79,7 @@
 
 (defn get-recipe-by-id [db id]
   (let [recipes (sql/query db ["SELECT * FROM recipes WHERE id = ?" id] rs-config)
-        recipes-ingredients (sql/query db  ["SELECT ri.ri_id, ri.recipe_id, ri.ingredient_id as i_id, i.name, ri.quantity, ri.percentage 
+        recipes-ingredients (sql/query db  ["SELECT ri.ri_id, ri.recipe_id, ri.ingredient_id, i.name, ri.quantity, ri.percentage 
                                              FROM recipes as r 
                                              INNER JOIN recipes_ingredients as ri ON r.id = recipe_id 
                                              INNER JOIN ingredients as i ON ri.ingredient_id = i.id

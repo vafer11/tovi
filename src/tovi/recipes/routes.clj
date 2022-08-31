@@ -4,9 +4,11 @@
             [tovi.recipes.handlers :as handler]
             [tovi.middleware.auth :refer [wrap-authenticated?]]))
 
+
 (def recipe-routes
   ["/recipes"
-   {:swagger {:tags ["recipes"]}}
+   {:swagger {:tags ["recipes"]}
+    :middleware [[wrap-authenticated?]]} 
    [""
     {:post {:summary "Create a new recipe"
             :parameters {:header [:map [:authorization :string]] :body schema/create-recipe-request}
@@ -32,14 +34,14 @@
 
 (def ingredient-routes
   ["/ingredients"
-   {:swagger {:tags ["ingredients"]}}
+   {:swagger {:tags ["ingredients"]}
+    :middleware [[wrap-authenticated?]]}
    [""
     {:post {:summary "Create a new ingredients"
             :parameters {:header [:map [:authorization :string]] :body schema/ingredient-request}
             :responses {201 {:body schema/ingredient} 412 {:body response/errors}}
             :handler handler/create-ingredient}
      :get {:summary "Get all ingredients"
-           :middleware [wrap-authenticated?]
            :parameters {:header [:map [:authorization :string]]}
            :responses {200 {:body schema/ingredients}}
            :handler handler/get-ingredients}}]

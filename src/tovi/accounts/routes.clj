@@ -9,13 +9,11 @@
    {:swagger {:tags ["account"]}}
    ["/signup"
     {:post {:summary "Sign up a new account"
-           ;:middleware [wrap-authenticated?]
             :parameters {:body schema/signup-request}
             :responses {201 {:body schema/signup-response} 412 {:body response/error}}
             :handler handler/signup}}]
    ["/signin"
     {:post {:summary "Sign in into your account with your email and password"
-            ;:middleware [wrap-authenticated?]
             :parameters {:body schema/signin-request}
             :responses {200 {:body schema/signup-response} 412 {:body response/error}}
             :handler handler/signin}}]

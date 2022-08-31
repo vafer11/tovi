@@ -18,7 +18,7 @@
    [tovi.orders.routes :refer [product-routes]]
    [tovi.recipes.routes :refer [recipe-routes ingredient-routes]]))
 
-(defn routes []
+(def routes
   [["/swagger.json"
     {:get {:no-doc true
            :swagger {:info {:title "Tovi API Reference"
@@ -50,20 +50,20 @@
                            ;; malli options
                            :options nil})
                :muuntaja   m/instance
-               :middleware [middleware/cors
-                            swagger/swagger-feature
+               :middleware [swagger/swagger-feature
                             muuntaja/format-negotiate-middleware
                             muuntaja/format-response-middleware
                             exception/exception-middleware
                             muuntaja/format-request-middleware
                             coercion/coerce-request-middleware
-                            coercion/coerce-response-middleware
-														; The first middleware to be executed
+                            coercion/coerce-response-middleware 
                             wrap-jwt-authenticated
+                            ; The first middleware to be executed
                             middleware/db]}})
 
 (defn create-app [db]
   (ring/ring-handler
-   (ring/router (routes) (router-config db))
+  (-> routes (ring/router (router-config db)))
    (ring/routes
-    (swagger-ui/create-swagger-ui-handler {:path "/"}))))
+    (swagger-ui/create-swagger-ui-handler {:path "/"}))
+   {:middleware [middleware/cors]}))

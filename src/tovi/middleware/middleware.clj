@@ -16,5 +16,6 @@
               (fn [handler]
                 (wrap-cors
                  handler
-                 :access-control-allow-origin [#".*"]
+                 :access-control-allow-origin [#"http://localhost:8280"] 
+                 :access-control-allow-credentials "true" 
                  :access-control-allow-methods [:get :put :post :delete])))})

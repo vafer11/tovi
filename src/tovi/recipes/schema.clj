@@ -10,7 +10,25 @@
     [:vector
      [:map
       [:ingredient_id :int]
-      [:quantity :int]]]]])
+      [:quantity :int]
+      [:percentage :int]]]]])
+
+(def update-recipe-request
+  [:and
+   [:map
+    [:name {:optional true} :string]
+    [:steps {:optional true} :string]
+    [:ingredients {:optional true}
+     [:vector
+      [:map
+       [:ri_id {:optional true} :int]
+       [:ingredient_id :int]
+       [:quantity :int]
+       [:percentage :int]
+       [:operation {:optional true} :string]]]]]
+   [:fn {:error/message "At least one field is required"}
+    (fn [{:keys [name steps ingredients]}]
+      (some #(not (nil? %1)) [name steps ingredients]))]])
 
 (def recipe
   [:map
@@ -22,33 +40,13 @@
     [:vector 
      [:map
       [:ri_id :int]
-      [:i_id :int]
+      [:ingredient_id :int]
       [:name :string]
-      [:percentage number?]
+      [:percentage :int]
       [:quantity :int]]]]])
 
 (def recipes
   [:vector recipe])
-
-(def update-recipe-ingredient
-  [:map
-   [:ingredient_id :int]
-   [:quantity :int]
-   [:ri_id {:optional true} :int]
-   [:operation {:optional true} :string]])
-
-(def update-ingredients
-  [:vector update-recipe-ingredient])
-
-(def update-recipe-request
-  [:and
-   [:map 
-    [:name {:optional true} :string]
-    [:steps {:optional true} :string]
-    [:update-ingredients {:optional true} update-ingredients]]
-   [:fn {:error/message "At least one field is required"}
-    (fn [{:keys [name steps]}]
-      (some #(not (nil? %1)) [name steps]))]])
 
 (def ingredient
   [:map 
